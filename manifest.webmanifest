@@ -1,7 +1,7 @@
 {
   "name": "今天吃什么 EatWhat",
   "short_name": "今天吃什么",
-  "description": "随机决定今天吃什么，记录每一顿，解锁吃货成就",
+  "description": "随机选择吃什么，记录每顿饭和评分，按次数和时间统计",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
