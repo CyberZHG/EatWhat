@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b1e23">
+<meta name="description" content="选择困难？随机决定今天吃什么，记录每一顿，解锁吃货成就。">
+<title>今天吃什么？！</title>
+<script>try{var t=JSON.parse(localStorage.getItem('ew.theme'));if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+<header class="bar">
+  <h1><a href="https://github.com/CyberZHG/EatWhat" target="_blank" rel="noopener" title="在 GitHub 上查看源代码">今天吃什么？！</a></h1>
+  <div class="actions">
+    <button id="themeBtn" type="button" class="icon-btn"></button>
+    <button type="button" class="icon-btn" data-page="pet" data-icon="paw" title="宠物" aria-label="宠物"></button>
+    <button type="button" class="icon-btn" data-page="achievements" data-icon="trophy" title="统计与成就" aria-label="统计与成就"></button>
+    <button type="button" class="icon-btn" data-page="settings" data-icon="sliders" title="设置" aria-label="设置"></button>
+    <button id="aboutBtn" type="button" class="icon-btn" data-icon="shield" title="免责声明" aria-label="免责声明"></button>
+  </div>
+</header>
+<main>
+  <nav id="groupBar" class="chips" aria-label="分组"></nav>
+  <section class="panel picker">
+    <div id="pickBox" class="pick-box">
+      <div id="pickHint" class="pick-hint"></div>
+      <div id="pickName" class="pick-name">吃什么？</div>
+      <div id="pickMeta" class="pick-meta"></div>
+    </div>
+    <div class="row center">
+      <button id="spinBtn" type="button" class="primary big"><span data-icon="dice"></span><span id="spinLabel">随机一下</span></button>
+      <button id="acceptBtn" type="button" class="big" hidden><span data-icon="check"></span>就吃它</button>
+    </div>
+    <div class="row center">
+      <button id="pickShareBtn" type="button" class="ghost" hidden><span data-icon="share"></span>晒一下</button>
+      <button id="skipBtn" type="button" class="ghost" hidden><span data-icon="ban"></span>今天不想吃这个</button>
+      <label id="coolWrap" class="ghost-select" hidden><span data-icon="hourglass"></span><select id="coolSel" aria-label="冷却期"></select></label>
+    </div>
+    <div id="poolInfo" class="hint center-text"></div>
+  </section>
+
+  <section id="ratePanel" class="panel rate-panel" aria-label="评价" hidden></section>
+
+  <section id="canteenPanel" class="panel" aria-label="食堂快记" hidden>
+    <div id="canteenList" class="canteen-list"></div>
+  </section>
+
+  <section class="panel">
+    <form id="addForm" class="row">
+      <input id="addInput" placeholder="添加食物或饭店，多个可用逗号分隔" autocomplete="off" maxlength="200">
+      <button type="submit" class="primary"><span data-icon="plus"></span>添加</button>
+    </form>
+    <div class="row">
+      <input id="searchInput" type="search" placeholder="搜索" autocomplete="off">
+      <select id="sortSel" title="排序方式"></select>
+    </div>
+    <div id="listInfo" class="hint"></div>
+    <ul id="itemList" class="items"></ul>
+  </section>
+
+  <details class="panel fold" data-fold="history">
+    <summary>吃饭记录<span id="histCount" class="sum-count"></span></summary>
+    <div class="body">
+      <ol id="histList" class="hist"></ol>
+      <div id="histEmpty" class="hint">还没有记录。抽到喜欢的点“就吃它”，或在列表里点“记一次”。</div>
+      <button id="histMore" type="button" hidden>显示更多</button>
+    </div>
+  </details>
+</main>
+
+<section id="achvPage" class="page" hidden>
+  <header class="bar">
+    <div class="actions">
+      <button type="button" class="icon-btn" data-close data-icon="back" title="返回" aria-label="返回"></button>
+      <h1>统计与成就</h1>
+    </div>
+    <div class="actions">
+      <span id="achvCount" class="count"></span>
+      <button id="shareBtn" type="button" class="icon-btn" data-icon="share" title="生成分享卡片" aria-label="生成分享卡片"></button>
+    </div>
+  </header>
+  <div class="page-body">
+    <nav id="statScope" class="chips" aria-label="统计范围"></nav>
+    <h2 id="statTitle">统计</h2>
+    <div id="statGrid" class="stat-grid"></div>
+    <h2>吃饭日历</h2>
+    <div id="heatmap" class="panel"></div>
+    <div id="rankBox"></div>
+    <div id="achvList"></div>
+  </div>
+</section>
+
+<section id="petPage" class="page" hidden>
+  <header class="bar">
+    <div class="actions">
+      <button type="button" class="icon-btn" data-close data-icon="back" title="返回" aria-label="返回"></button>
+      <h1>宠物</h1>
+    </div>
+    <div class="actions">
+      <span id="petAchvCount" class="count"></span>
+      <span id="petMini" class="pet-mini" hidden>
+        <span class="mini-num"><b id="petMiniKcal"></b><small id="petMiniRate"></small></span>
+        <button id="petMiniFeed" type="button" class="primary">喂一口</button>
+      </span>
+    </div>
+  </header>
+  <div class="page-body pet-body">
+    <div id="petNote" class="panel pet-note" hidden>
+      <span id="petNoteText" class="grow"></span>
+      <button id="petNoteClose" type="button" class="icon-btn small" data-icon="close" title="关闭" aria-label="关闭"></button>
+    </div>
+    <section class="panel pet-card">
+      <div id="petArt" class="pet-art" role="button" aria-label="喂一口"></div>
+      <div class="pet-info">
+        <div class="row pet-title">
+          <button id="petName" type="button" class="link pet-name" title="改名"></button>
+          <span id="petLevel" class="pet-level"></span>
+        </div>
+        <div id="petSpeciesName" class="hint"></div>
+        <div class="bar-track"><div id="petExpFill" class="bar-fill"></div></div>
+        <div id="petExp" class="hint"></div>
+        <div id="petMood" class="hint"></div>
+        <div id="petMeals" class="hint"></div>
+      </div>
+    </section>
+    <section class="panel pet-kcal">
+      <div class="pet-kcal-num"><span id="petKcal">0</span><span class="unit">卡</span></div>
+      <div id="petRate" class="hint"></div>
+      <button id="petFeed" type="button" class="primary big">喂一口<span id="petFeedVal" class="feed-val"></span></button>
+      <div id="petDebt" class="hint err-text" hidden></div>
+      <div id="petNumFmt" class="num-fmt" role="group" aria-label="数字显示方式">
+        <button type="button" class="link-chip" data-fmt="cn">万、亿</button>
+        <button type="button" class="link-chip" data-fmt="sci">科学计数</button>
+      </div>
+    </section>
+    <section id="petOrder" class="panel pet-order" aria-label="订单"></section>
+    <section id="petAuto" class="panel pet-auto" hidden>
+      <div class="auto-title">自动化</div>
+      <div class="auto-grid">
+        <label class="check" data-skill="a1"><input type="checkbox" data-auto="foods">自动买食物</label>
+        <label class="check" data-skill="a2"><input type="checkbox" data-auto="ups">自动买升级</label>
+        <label class="check" data-skill="a3"><input type="checkbox" data-auto="prestige">自动重开</label>
+        <label class="check" data-skill="a4"><input type="checkbox" data-auto="swap">自动换宠物</label>
+      </div>
+      <div class="grid">
+        <label data-skill="a1"><span>保留热量</span><select id="petAutoKeep"></select></label>
+        <label data-skill="a3"><span>自动重开条件</span><select id="petAutoRatio"></select></label>
+      </div>
+      <ul id="petAutoLog" class="auto-log"></ul>
+    </section>
+    <details class="panel fold" data-fold="petHelp">
+      <summary>规则说明</summary>
+      <div class="body hint pet-help">
+        <p>热量由食物持续产出，喂一口也能获得。热量用来买食物和升级。</p>
+        <p>只在打开本页时计时。离开本页后停止，再次打开时结算离开期间的产出，最多按 12 小时计算，不含饭点加成。</p>
+        <p>在主页记录一顿饭，且记录时间与吃饭时间相差不超过 2 小时，宠物获得 1 点经验和相当于 10 分钟产出的热量（至少 100 卡）。每天最多 3 次。补记的饭、同一地点同一分钟的重复记录不计入。删除获得过奖励的记录会扣回奖励。</p>
+        <p>订单：宠物会从菜单里挑一个想吃的。24 小时内在主页真实地吃一次并记录，获得相当于 1 小时产出的热量。不想吃可以拒绝，1 小时后出现新订单。</p>
+        <p>图鉴：菜单里吃过的每一项算一张地点卡，食堂记过的每道菜算一张菜谱卡。吃的次数越多卡的等级越高，加成越大。一个分组至少 3 项且每项都吃过，额外 +10%。图鉴只体现在加成里。</p>
+        <p class="row"><button id="petResetBtn" type="button" class="danger">重置宠物</button><span>只清空宠物的进度，不影响吃饭记录。</span></p>
+        <p data-layer="prestige">重开：本轮累计热量达到 1,000 亿卡后可以重开。热量、食物和升级清零，换取胃口点数，数量是本轮累计热量除以 1,000 亿后开立方。胃口提高产出，也可以用来买天赋。</p>
+        <p data-layer="swap">换宠物：胃口达到要求后可以换一只新宠物，每种宠物有不同的特性。旧宠物进入相册，相册提供永久加成。每换一次，下一次的要求提高到 1.6 倍。</p>
+        <p data-layer="move">搬家：相册里的胃口累计达到 2,000 点后可以搬家。相册越大，获得的见识越多，但增长逐渐变慢。每点见识使产出 +25%，也可以用来学技能，包括自动化。每座城市有一条规则，持续到下一次搬家。</p>
+        <p>喂一口：每口获得固定热量，再加上当前每秒产出的 10%。顺手加餐每级再加 5%。</p>
+        <p>等级、图鉴、主页成就、最近的评分、宠物成就和胃口都会提高产出，详见下方加成。游戏数据只保存在本设备，不参与备份和同步。</p>
+      </div>
+    </details>
+    <details class="panel fold" data-fold="petBonus">
+      <summary>加成<span id="petBonusTotal" class="sum-count"></span></summary>
+      <div class="body"><ul id="petBonus" class="ranks bonus-list"></ul></div>
+    </details>
+    <h2>食物</h2>
+    <div id="petBuy" class="chips buy-chips">
+      <button type="button" class="chip" data-buy="1">买 1</button>
+      <button type="button" class="chip" data-buy="10">买 10</button>
+      <button type="button" class="chip" data-buy="max">买最多</button>
+    </div>
+    <div id="petFoods" class="panel food-list"></div>
+    <h2>升级</h2>
+    <div class="row up-tools">
+      <div id="petUpSort" class="chips buy-chips">
+        <button type="button" class="chip" data-sort="value">按性价比</button>
+        <button type="button" class="chip" data-sort="cost">按价格</button>
+      </div>
+      <button id="petBuyAll" type="button" class="push-right">买下所有买得起的</button>
+    </div>
+    <div id="petUps" class="up-grid"></div>
+    <div id="petUpsMore" class="hint" hidden></div>
+    <div id="petUpsEmpty" class="hint">暂时没有可买的升级。食物数量和累计热量达到一定值后会出现新的升级。</div>
+    <div data-layer="prestige">
+    <h2>重开</h2>
+    <section class="panel prestige">
+      <div id="petRunTotal" class="hint"></div>
+      <div id="petPrestigeGain"></div>
+      <div class="row"><button id="petPrestigeBtn" type="button" class="primary">重开</button></div>
+      <div class="hint">重开会清零热量、食物和升级。等级、经验、成就、图鉴、订单记录和已买的天赋保留。</div>
+    </section>
+    <div id="petPoints" class="hint perk-points"></div>
+    <div id="petPerks" class="up-grid"></div>
+    </div>
+    <div data-layer="swap">
+    <h2>换一只宠物</h2>
+    <section class="panel swap">
+      <div id="petSwapInfo" class="hint"></div>
+      <div id="petSpecies" class="species-grid"></div>
+      <div class="row">
+        <input id="petSwapName" maxlength="12" placeholder="新宠物的名字（可不填）" autocomplete="off" aria-label="新宠物的名字">
+        <button id="petSwapBtn" type="button" class="primary">换宠物</button>
+      </div>
+      <div class="hint">换宠物会清零热量、食物、升级、胃口和天赋。当前宠物进入相册，相册里每 1 点胃口使之后所有宠物的产出 +1%。等级、经验、成就和订单记录保留。</div>
+    </section>
+    <ul id="petAlbum" class="panel album" hidden></ul>
+    </div>
+    <div data-layer="move">
+    <h2>搬家</h2>
+    <section class="panel move">
+      <div id="petCity"></div>
+      <div id="petInsight" class="hint"></div>
+      <div id="petSkills" class="skill-tree"></div>
+      <div id="petMoveInfo"></div>
+      <div id="petCities" class="species-grid"></div>
+      <div class="row"><button id="petMoveBtn" type="button" class="primary">搬家</button></div>
+      <div class="hint">搬家会清零热量、食物、升级、胃口、天赋和相册，换取见识。当前宠物、等级、经验、成就、订单记录和技能保留。</div>
+    </section>
+    <ul id="petMoves" class="panel album" hidden></ul>
+    </div>
+    <details class="panel fold" data-fold="petAchv">
+      <summary>宠物成就<span id="petAchvSum" class="sum-count"></span></summary>
+      <div class="body">
+        <div class="hint">每个宠物成就使产出 +1%，隐藏成就也算。</div>
+        <div id="petAchv"></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<section id="settingsPage" class="page" hidden>
+  <header class="bar">
+    <div class="actions">
+      <button type="button" class="icon-btn" data-close data-icon="back" title="返回" aria-label="返回"></button>
+      <h1>设置</h1>
+    </div>
+  </header>
+  <div class="page-body">
+    <details class="panel fold" data-fold="pick" open>
+      <summary>抽选规则</summary>
+      <div class="body">
+        <div class="grid">
+          <label><span>抽选方式</span><select id="modeSel"></select></label>
+          <label><span>避开最近吃过的</span><select id="avoidSel"></select></label>
+        </div>
+        <div id="modeHint" class="hint"></div>
+        <label class="check"><input id="smartChk" type="checkbox">参考评分和吃饭时段</label>
+        <div class="hint">评价越好、越常在当前这个钟点吃的，被抽中的机会会略微提高；踩雷的会略微降低。影响幅度有上限，不会盖过上面的抽选方式。</div>
+        <label class="check"><input id="animChk" type="checkbox">抽选时播放滚动动画</label>
+        <label><span>动画速度</span><select id="speedSel"></select></label>
+      </div>
+    </details>
+    <details class="panel fold" data-fold="sync">
+      <summary>跨设备同步</summary>
+      <div class="body">
+        <div class="hint">在这台设备上生成二维码或同步码，在另一台设备上扫码或粘贴导入，可以选择合并或覆盖。数据只在两台设备之间传递，不经过任何服务器。</div>
+        <div class="row"><button id="syncOutBtn" type="button" class="primary">生成二维码和同步码</button></div>
+        <div class="row">
+          <input id="syncInput" placeholder="粘贴同步码或同步链接" autocomplete="off" spellcheck="false" aria-label="同步码">
+          <button id="syncInBtn" type="button">导入</button>
+        </div>
+        <div id="syncMsg" class="msg"></div>
+        <div class="hint">iPhone 上添加到主屏幕的网页和 Safari 中的网页数据是分开的。扫码会在 Safari 中打开，如果你平时用主屏幕上的图标，请改用复制同步码、在主屏幕网页里粘贴导入。</div>
+      </div>
+    </details>
+    <details class="panel fold" data-fold="backup">
+      <summary>数据备份</summary>
+      <div class="body">
+        <div class="hint">所有数据只保存在当前浏览器中。备份包含菜单、吃饭记录、统计、成就和设置，可在其他设备或浏览器中导入。</div>
+        <div class="row">
+          <button id="exportBtn" type="button" class="primary">导出备份</button>
+          <label class="btn">导入备份<input id="importInput" type="file" accept=".json,application/json" hidden></label>
+        </div>
+        <div id="backupMsg" class="msg"></div>
+      </div>
+    </details>
+    <details class="panel fold" data-fold="reset">
+      <summary>恢复与重置</summary>
+      <div class="body">
+        <div class="hint">把内置的店名重新加入菜单，已存在的不会重复添加。</div>
+        <div class="row"><button id="restoreBtn" type="button">恢复内置店名</button></div>
+        <div class="hint">清空吃饭记录、统计、成就和宠物，菜单恢复为内置店名。无法撤销，建议先导出备份（备份不含宠物）。</div>
+        <div class="row"><button id="resetBtn" type="button" class="danger">清空全部数据</button></div>
+        <div id="resetMsg" class="msg"></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<dialog id="editDlg" class="dialog">
+  <form id="editForm" method="dialog">
+    <h2>编辑</h2>
+    <label><span>名称</span><input id="editName" maxlength="40" autocomplete="off" required></label>
+    <label><span>分组</span><select id="editGroup"></select></label>
+    <label class="check"><input id="editOn" type="checkbox">参与随机抽选</label>
+    <label class="check"><input id="editCanteen" type="checkbox">这是食堂，每次记录时填写吃了什么菜</label>
+    <div id="editStars"></div>
+    <div id="editStats" class="hint"></div>
+    <label><span>冷却期</span><select id="editCool"></select></label>
+    <div class="field"><span>补记一次</span>
+      <div class="row">
+        <input id="editDate" type="datetime-local" aria-label="补记时间">
+        <button id="editLog" type="button">补记</button>
+      </div>
+    </div>
+    <ol id="editHist" class="hist small"></ol>
+    <div class="row end">
+      <button id="editDel" type="button" class="danger push-left">删除</button>
+      <button id="editCancel" type="button">取消</button>
+      <button type="submit" class="primary">保存</button>
+    </div>
+    <div id="editMsg" class="msg err"></div>
+  </form>
+</dialog>
+
+<dialog id="entryDlg" class="dialog">
+  <div class="entry-body">
+    <h2 id="entryTitle"></h2>
+    <div id="entryWhen" class="hint"></div>
+    <div class="field"><span>这一顿怎么样</span><div id="entryRate"></div></div>
+    <ul id="entryDishes" class="hist small"></ul>
+    <div class="row end">
+      <button id="entryDel" type="button" class="danger push-left">删除记录</button>
+      <button id="entryDishBtn" type="button">填写吃了什么</button>
+      <button id="entryClose" type="button" class="primary">完成</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dishDlg" class="dialog">
+  <form id="dishForm">
+    <h2 id="dishTitle">吃了什么</h2>
+    <div id="dishWhen" class="hint"></div>
+    <div class="field"><span>这一顿总体</span><div id="dishRate"></div></div>
+    <ul id="dishChips" class="dish-rows" hidden></ul>
+    <div class="row">
+      <input id="dishInput" placeholder="输入菜名，回车添加" autocomplete="off" maxlength="200" role="combobox" aria-autocomplete="list" aria-controls="dishSuggest" aria-expanded="false" aria-label="菜名">
+      <button id="dishAdd" type="button">添加</button>
+    </div>
+    <ul id="dishSuggest" class="suggest" role="listbox" hidden></ul>
+    <div id="dishNear" class="near" hidden></div>
+    <div id="dishFavWrap" class="field" hidden><span>常吃的菜，点一下添加</span><div id="dishFav" class="fav-chips"></div></div>
+    <div class="row end">
+      <button id="dishSkip" type="button">先不填</button>
+      <button id="dishSave" type="submit" class="primary">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="groupDlg" class="dialog">
+  <h2>编辑分组</h2>
+  <div class="hint">删除分组不会删除里面的内容，它们会变成未分组。</div>
+  <ul id="groupList" class="group-list"></ul>
+  <form id="groupForm" class="row">
+    <input id="groupInput" placeholder="新分组名称，如：奶茶" maxlength="20" autocomplete="off">
+    <button type="submit" class="primary"><span data-icon="plus"></span>新建</button>
+  </form>
+  <div id="groupMsg" class="msg err"></div>
+  <div class="row end"><button id="groupClose" type="button">完成</button></div>
+</dialog>
+
+<dialog id="syncOutDlg" class="dialog">
+  <h2>同步到另一台设备</h2>
+  <canvas id="syncQr" class="qr" aria-label="同步二维码"></canvas>
+  <div id="syncOutInfo" class="hint"></div>
+  <div class="row end">
+    <button id="syncCopyLink" type="button">复制链接</button>
+    <button id="syncCopyCode" type="button">复制同步码</button>
+    <button id="syncOutClose" type="button" class="primary">完成</button>
+  </div>
+</dialog>
+
+<dialog id="syncInDlg" class="dialog">
+  <h2>导入另一台设备的数据</h2>
+  <p id="syncInfo"></p>
+  <ul class="sync-choices">
+    <li><b>合并</b>：保留这台设备的数据，补上对方有而这里没有的菜单、分组和吃饭记录，同一时间的同一顿不会重复。</li>
+    <li><b>覆盖</b>：删掉这台设备的数据，完全换成对方的。</li>
+  </ul>
+  <div class="row end">
+    <button id="syncCancel" type="button" class="push-left">取消</button>
+    <button id="syncReplace" type="button" class="danger">覆盖</button>
+    <button id="syncMerge" type="button" class="primary">合并</button>
+  </div>
+</dialog>
+
+<dialog id="petDlg" class="dialog">
+  <form id="petDlgForm" class="pet-dlg">
+    <h2 id="petDlgTitle"></h2>
+    <p id="petDlgText" class="hint"></p>
+    <input id="petDlgInput" maxlength="12" autocomplete="off" aria-label="名字" hidden>
+    <div class="row end">
+      <button id="petDlgCancel" type="button">取消</button>
+      <button id="petDlgOk" type="submit" class="primary"></button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="shareDlg" class="dialog">
+  <img id="shareImg" alt="分享卡片">
+  <div class="row end">
+    <button id="shareSend" type="button" class="primary">分享</button>
+    <button id="shareSave" type="button">保存图片</button>
+    <button id="shareClose" type="button">关闭</button>
+  </div>
+</dialog>
+
+<dialog id="aboutDlg" class="dialog about">
+  <h2>免责声明与隐私说明</h2>
+  <ul>
+    <li>本网页是托管在 GitHub Pages 上的纯静态页面，没有后端服务器，也不收集任何统计或分析数据。</li>
+    <li>菜单、吃饭记录、统计、成就和设置都只保存在当前浏览器本地（localStorage），不会上传到任何服务器。</li>
+    <li>内置店名仅作为示例，与相关品牌没有任何关联，也不构成推荐。各门店是否在你附近营业请以实际为准。</li>
+    <li>清除浏览器的网站数据会删除以上所有内容，请通过“设置 → 数据备份”定期导出。</li>
+    <li>本工具按原样提供，随机结果仅供娱乐，吃什么最终还是你说了算。</li>
+  </ul>
+  <p>源代码：<a href="https://github.com/CyberZHG/EatWhat" target="_blank" rel="noopener">github.com/CyberZHG/EatWhat</a></p>
+  <div class="row end"><button id="aboutClose" type="button" class="primary" autofocus>知道了</button></div>
+</dialog>
+
+<div id="heatTip" class="heat-tip" hidden></div>
+
+<div id="toasts" class="toasts"></div>
+
+<script src="js/core.js"></script>
+<script src="js/icons.js"></script>
+<script src="js/data.js"></script>
+<script src="js/achievements.js"></script>
+<script src="js/picker.js"></script>
+<script src="js/groups.js"></script>
+<script src="js/list.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/history.js"></script>
+<script src="js/ratings.js"></script>
+<script src="js/dishes.js"></script>
+<script src="js/achv-page.js"></script>
+<script src="js/qr.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/share.js"></script>
+<script src="js/pet-data.js"></script>
+<script src="js/pet.js"></script>
+<script src="js/pet-ui.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

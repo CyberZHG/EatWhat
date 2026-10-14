@@ -1,0 +1,20 @@
+{
+  "name": "今天吃什么 EatWhat",
+  "short_name": "今天吃什么",
+  "description": "随机决定今天吃什么，记录每一顿，解锁吃货成就",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#121417",
+  "theme_color": "#1b1e23",
+  "lang": "zh-CN",
+  "shortcuts": [
+    { "name": "记食堂", "short_name": "记食堂", "description": "记录在食堂吃了什么", "url": "./?canteen", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
