@@ -123,7 +123,7 @@ const SPECIES = [
 const SWAP_POINTS = 100;
 const SWAP_GROWTH = 1.6;
 const swapNeed = s => Math.round(SWAP_POINTS * SWAP_GROWTH ** (s.album || []).length);
-const POINT_BONUS = 0.05;
+const POINT_BONUS = 0.25;
 const ALBUM_BONUS = 0.01;
 const speciesOf = s => SPECIES.find(x => x.id === s.species) || SPECIES[0];
 const petLabel = (name, sp) => name === sp.name ? name : `${name}（${sp.name}）`;
