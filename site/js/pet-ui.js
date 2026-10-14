@@ -334,7 +334,11 @@ function renderPetOrder() {
 function renderPetPerks() {
   const s = Pet.s;
   const free = s.points - s.spent;
-  $('#petPoints').textContent = `胃口 ${s.points} 点，可用 ${free} 点。每点胃口使产出 +${POINT_BONUS * 100}%，花掉也不减少。已重开 ${s.runs} 次。`;
+  const allOwned = PERKS.every(p => s.perks.includes(p.id));
+  $('#petPerks').hidden = allOwned;
+  $('#petPoints').textContent = allOwned
+    ? `胃口 ${s.points} 点。每点胃口使产出 +${POINT_BONUS * 100}%。天赋已全部买齐。已重开 ${s.runs} 次。`
+    : `胃口 ${s.points} 点，可用 ${free} 点。每点胃口使产出 +${POINT_BONUS * 100}%，花掉也不减少。已重开 ${s.runs} 次。`;
   $('#petPerks').replaceChildren(...PERKS.map(p => {
     const owned = s.perks.includes(p.id);
     const b = el('button', owned ? 'up-card owned' : 'up-card');
