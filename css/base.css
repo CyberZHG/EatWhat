@@ -38,6 +38,12 @@
 
 html, body { margin: 0; }
 
+html { touch-action: manipulation; }
+
+button, .btn, .chip, [role="button"], .pet-art { touch-action: manipulation; }
+
+#petFeed, #petMiniFeed, .pet-art, #spinBtn { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
 body {
   background: var(--bg);
   color: var(--text);
