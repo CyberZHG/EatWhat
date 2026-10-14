@@ -1,5 +1,6 @@
 const PET_KEY = 'ewg.state';
-const OFFLINE_CAP = 12 * HOUR;
+const OFFLINE_CAP = 7 * DAY;
+const CATCHUP_PARTS = 96;
 const MEAL_CAP = 3;
 const MEAL_WINDOW = 2 * HOUR;
 const GROWTH = 1.15;
@@ -114,7 +115,7 @@ const layerOpen = (s, layer) => !layer || !!(s.seen || {})[layer];
 const SPECIES = [
   { id: 'normal', name: '团子', trait: '没有特性。', color: '' },
   { id: 'punctual', name: '阿准', trait: '饭点加成从 ×2 提高到 ×3。', color: '#d4a017' },
-  { id: 'patient', name: '慢慢', trait: '离线上限多 12 小时，离线产出 ×1.5。', color: '#5b8fd1' },
+  { id: 'patient', name: '慢慢', trait: '离线产出 ×2。', color: '#5b8fd1' },
   { id: 'bigbite', name: '大口', trait: '喂一口 ×5，顺手加餐的比例 ×2。', color: '#d9534f' },
   { id: 'picky', name: '挑挑', trait: '图鉴加成 ×1.5，图鉴上限翻倍。', color: '#6aa84f' },
   { id: 'social', name: '热闹', trait: '订单奖励 ×3，完成后 30 分钟出现新订单。', color: '#a35bc4' },
@@ -141,8 +142,8 @@ const foodRateOf = (s, i) => (s.foods[i] || 0) * FOODS[i].rate * foodMulOf(s, i)
 const prodOf = s => FOODS.reduce((a, _, i) => a + foodRateOf(s, i), 0);
 const peakMulOf = s => (isSpecies(s, 'punctual') ? 3 : 2) * (cityOf(s).peakMul || 1);
 const upCostOf = (s, u) => u.cost * (hasPerk(s, 'cheap') ? 0.75 : 1);
-const offlineCapOf = s => OFFLINE_CAP * (hasPerk(s, 'offline') ? 2 : 1) + (isSpecies(s, 'patient') ? 12 * HOUR : 0);
-const offlineMulOf = s => (isSpecies(s, 'patient') ? 1.5 : 1) * (cityOf(s).offline || 1);
+const offlineCapOf = () => OFFLINE_CAP;
+const offlineMulOf = s => (isSpecies(s, 'patient') ? 2 : 1) * (hasPerk(s, 'offline') ? 1.5 : 1) * (cityOf(s).offline || 1);
 const orderMulOf = s => (hasPerk(s, 'order') ? 2 : 1) * (isSpecies(s, 'social') ? 3 : 1) * (cityOf(s).order || 1);
 const mealMinutesOf = s => hasPerk(s, 'meal') ? 30 : 10;
 const albumPoints = s => (s.album || []).reduce((a, p) => a + p.points, 0);
@@ -189,7 +190,7 @@ const fmtBig = n => {
 const PERKS = [
   { id: 'start', name: '开局有粮', desc: '重开后自带 10 份零食和 5 份便当。', cost: 1 },
   { id: 'click', name: '大口吃', desc: '喂一口获得的热量 ×3。', cost: 2 },
-  { id: 'offline', name: '耐心等待', desc: '离线收益上限从 12 小时延长到 24 小时。', cost: 3 },
+  { id: 'offline', name: '耐心等待', desc: '离线产出 ×1.5。', cost: 3 },
   { id: 'order', name: '好商量', desc: '订单奖励 ×2。', cost: 4 },
   { id: 'meal', name: '认真吃饭', desc: '真实饭的热量奖励从 10 分钟产出提高到 30 分钟。', cost: 5 },
   { id: 'cheap', name: '熟门熟路', desc: '所有升级价格 -25%。', cost: 6 },
@@ -436,7 +437,7 @@ const PET_ACHV = [
     ['return-30', '常回来看看', 30, '领取 30 次离线收益。'],
   ]),
   ...petTier('离开', 'moon', s => s.fullAway, fmtTimesP, [
-    ['away-12h', '离开太久', 1, '离开超过 12 小时，离线收益达到上限。'],
+    ['away-12h', '离开太久', 1, '离开超过一周，离线收益达到上限。'],
   ]),
 ];
 

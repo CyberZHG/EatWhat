@@ -8,7 +8,7 @@ vm.createContext(ctx);
 vm.runInContext(`${head}
 this.G = { FOODS, UPGRADES, PERKS, SPECIES, SWAP_POINTS, swapNeed, POINT_BONUS, PRESTIGE_UNIT, GROWTH, prestigeGain, petLevel,
   foodRateOf, prodOf, clickOf, upCostOf, offlineCapOf, offlineMulOf, orderMulOf, mealMinutesOf, albumMulOf, peakMulOf,
-  CITIES, SKILLS, insightGainOf, insightMulOf, onlineMulOf, hasSkill, foodOpen, groupBonusOf, orderHoursOf, albumPoints };`, ctx);
+  CITIES, SKILLS, CATCHUP_PARTS, insightGainOf, insightMulOf, onlineMulOf, hasSkill, foodOpen, groupBonusOf, orderHoursOf, albumPoints };`, ctx);
 const G = ctx.G;
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => a.replace(/^--/, '').split('=')));
@@ -136,8 +136,8 @@ function simulate() {
       if (lastHour > 0) {
         const used = Math.min(away, G.offlineCapOf(s));
         if (G.hasSkill(s, 'a5')) {
-          for (let k = 0; k < 48; k++) {
-            gain(s, G.prodOf(s) * base0 * G.offlineMulOf(s) * used / 48 / 1000);
+          for (let k = 0; k < G.CATCHUP_PARTS; k++) {
+            gain(s, G.prodOf(s) * base0 * G.offlineMulOf(s) * used / G.CATCHUP_PARTS / 1000);
             for (let n = 0; n < 60; n++) {
               const b = bestBuy(s, base0);
               if (!b) break;
