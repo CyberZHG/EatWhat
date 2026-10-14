@@ -473,7 +473,7 @@ const Pet = (() => {
       s.returns++;
       if (dt >= cap) s.fullAway++;
       if (hasSkill(s, 'a5')) {
-        const parts = 48;
+        const parts = CATCHUP_PARTS;
         for (let k = 0; k < parts; k++) {
           const g = rate(false, false) * offlineMulOf(s) * used / parts / 1000;
           gain(g);
@@ -486,7 +486,7 @@ const Pet = (() => {
       }
       const lines = [
         `离开了 ${fmtSpan(dt)}。`,
-        dt > cap ? `计算 ${fmtSpan(used)}，上限是 ${cap / HOUR} 小时，超出的 ${fmtSpan(dt - cap)} 不计算。` : `全部 ${fmtSpan(used)} 都计入。`,
+        dt > cap ? `计算 ${fmtSpan(used)}，上限是 ${fmtSpan(cap)}，超出的 ${fmtSpan(dt - cap)} 不计算。` : `全部 ${fmtSpan(used)} 都计入。`,
         hasSkill(s, 'a5')
           ? `开始时每秒 ${fmtBig(per)} 卡，离线期间按自动规则分段补买，结束时每秒 ${fmtBig(rate(false, false) * offlineMulOf(s))} 卡。不含饭点加成。`
           : `按每秒 ${fmtBig(per)} 卡计算${offlineMulOf(s) !== 1 ? `，含离线 ×${offlineMulOf(s)}` : ''}，不含饭点加成。`,
