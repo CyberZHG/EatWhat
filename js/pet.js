@@ -203,6 +203,16 @@ const Pet = (() => {
     s.autoLog.length = Math.min(s.autoLog.length, 20);
   }
 
+  function startFoods() {
+    const f = FOODS.map(() => 0);
+    f[0] = 1;
+    if (s.perks.includes('start')) {
+      f[0] = 10;
+      f[1] = 5;
+    }
+    return f;
+  }
+
   function doPrestige() {
     const pts = prestigeGain(s.runTotal);
     if (pts < 1) return 0;
@@ -212,11 +222,7 @@ const Pet = (() => {
     s.kcal = 0;
     s.runTotal = 0;
     s.ups = [];
-    s.foods = FOODS.map(() => 0);
-    if (s.perks.includes('start')) {
-      s.foods[0] = 10;
-      s.foods[1] = 5;
-    }
+    s.foods = startFoods();
     env = null;
     return pts;
   }
@@ -245,7 +251,7 @@ const Pet = (() => {
     s.kcal = 0;
     s.runTotal = 0;
     s.ups = [];
-    s.foods = FOODS.map(() => 0);
+    s.foods = startFoods();
     env = null;
   }
 
@@ -664,7 +670,7 @@ const Pet = (() => {
       s.kcal = 0;
       s.runTotal = 0;
       s.ups = [];
-      s.foods = FOODS.map(() => 0);
+      s.foods = startFoods();
       s.order = null;
       s.orderNext = 0;
       env = null;
