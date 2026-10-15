@@ -295,9 +295,9 @@ function renderPetSwap() {
     return b;
   }));
   $('#petSwapBtn').disabled = !can;
-  const album = $('#petAlbum');
-  album.hidden = !s.album.length;
-  album.replaceChildren(el('li', 'album-title', `相册 · ${s.album.length} 只 · 共 ${albumPoints(s)} 点胃口，产出 ×${albumMulOf(s).toFixed(2)}`), ...[...s.album].reverse().map(a => {
+  $('#petAlbumFold').hidden = !s.album.length;
+  $('#petAlbumSum').textContent = `${s.album.length} 只 · ${albumPoints(s)} 点胃口 · ×${albumMulOf(s).toFixed(2)}`;
+  $('#petAlbum').replaceChildren(...[...s.album].reverse().map(a => {
     const li = el('li');
     const sp = SPECIES.find(x => x.id === a.species) || SPECIES[0];
     li.append(el('span', 'grow', petLabel(a.name, sp)), el('span', 'meta', `${dayKey(new Date(a.from))} 至 ${dayKey(new Date(a.to))}，重开 ${a.runs} 次，${a.points} 点胃口，共 ${fmtBig(a.total)} 卡`));

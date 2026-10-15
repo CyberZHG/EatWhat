@@ -1,4 +1,4 @@
-const CACHE = 'eatwhat-v22';
+const CACHE = 'eatwhat-v24';
 const ASSETS = [
   './',
   'index.html',

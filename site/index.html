@@ -212,9 +212,12 @@
         <input id="petSwapName" maxlength="12" placeholder="新宠物的名字（可不填）" autocomplete="off" aria-label="新宠物的名字">
         <button id="petSwapBtn" type="button" class="primary">换宠物</button>
       </div>
-      <div class="hint">换宠物会清零热量、食物、升级、胃口和天赋。当前宠物进入相册，相册里每 1 点胃口使之后所有宠物的产出 +1%。等级、经验、成就和订单记录保留。</div>
+      <div class="hint">换宠物会清零热量、食物、升级、胃口和天赋。当前宠物进入相册，相册里每 1 点胃口使之后所有宠物的产出 +3%。等级、经验、成就和订单记录保留。</div>
     </section>
-    <ul id="petAlbum" class="panel album" hidden></ul>
+    <details id="petAlbumFold" class="panel fold" data-fold="petAlbum" hidden>
+      <summary>相册<span id="petAlbumSum" class="sum-count"></span></summary>
+      <div class="body"><ul id="petAlbum" class="album"></ul></div>
+    </details>
     </div>
     <div data-layer="move">
     <h2>搬家</h2>
