@@ -288,6 +288,7 @@ function renderPetSwap() {
     const dot = el('span', 'species-dot');
     b.append(dot, el('span', 'name', sp.name), el('span', 'meta', sp.trait));
     if (cur) b.append(el('span', 'up-cost', '当前'));
+    else if (s.cityPets[`${s.city || 'home'}|${sp.id}`]) b.append(el('span', 'species-done', `在${cityOf(s).name}养过`));
     b.onclick = () => {
       petSwapPick.id = sp.id;
       renderPetSwap();
