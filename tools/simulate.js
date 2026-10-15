@@ -79,6 +79,7 @@ function maybePrestige(s, day, log) {
   s.runTotal = 0;
   s.ups = [];
   s.foods = G.FOODS.map(() => 0);
+  s.foods[0] = 1;
   if (s.perks.includes('start')) { s.foods[0] = 10; s.foods[1] = 5; }
   s.runStart = day;
   log(`第 ${day.toFixed(1)} 天 重开 #${s.runs}，+${pts} 胃口，共 ${s.points}`);
@@ -108,7 +109,7 @@ function maybePrestige(s, day, log) {
     s.insight += ig;
     s.moves++;
     log(`第 ${day.toFixed(1)} 天 搬家 #${s.moves} 到 ${G.CITIES.find(c => c.id === city).name}，+${ig} 见识，共 ${s.insight}（相册 ${s.album.length} 只，${G.albumPoints(s)} 点）`);
-    Object.assign(s, { city, album: [], points: 0, spent: 0, perks: [], petRuns: 0, kcal: 0, runTotal: 0, ups: [], foods: G.FOODS.map(() => 0) });
+    Object.assign(s, { city, album: [], points: 0, spent: 0, perks: [], petRuns: 0, kcal: 0, runTotal: 0, ups: [], foods: G.FOODS.map((_, i) => i ? 0 : 1) });
     const spentNow = () => G.SKILLS.filter(k => s.skills.includes(k.id)).reduce((a, k) => a + k.cost, 0);
     for (const id of ['a1', 'a2', 'a5', 'a3', 'a4', 'r2', 'r1', 'r3', 'r4', 'e1', 'e2', 'e3']) {
       const k = G.SKILLS.find(x => x.id === id);
