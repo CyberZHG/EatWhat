@@ -124,7 +124,7 @@ const SWAP_POINTS = 100;
 const SWAP_GROWTH = 1.6;
 const swapNeed = s => Math.round(SWAP_POINTS * SWAP_GROWTH ** (s.album || []).length);
 const POINT_BONUS = 0.25;
-const ALBUM_BONUS = 0.01;
+const ALBUM_BONUS = 0.03;
 const speciesOf = s => SPECIES.find(x => x.id === s.species) || SPECIES[0];
 const petLabel = (name, sp) => name === sp.name ? name : `${name}（${sp.name}）`;
 const hasPerk = (s, id) => s.perks.includes(id);
@@ -189,11 +189,11 @@ const fmtBig = n => {
 
 const PERKS = [
   { id: 'start', name: '开局有粮', desc: '重开后自带 10 份零食和 5 份便当。', cost: 1 },
-  { id: 'click', name: '大口吃', desc: '喂一口获得的热量 ×3。', cost: 2 },
-  { id: 'offline', name: '耐心等待', desc: '离线产出 ×1.5。', cost: 3 },
-  { id: 'order', name: '好商量', desc: '订单奖励 ×2。', cost: 4 },
-  { id: 'meal', name: '认真吃饭', desc: '真实饭的热量奖励从 10 分钟产出提高到 30 分钟。', cost: 5 },
-  { id: 'cheap', name: '熟门熟路', desc: '所有升级价格 -25%。', cost: 6 },
+  { id: 'click', name: '大口吃', desc: '喂一口获得的热量 ×3。', cost: 1 },
+  { id: 'offline', name: '耐心等待', desc: '离线产出 ×1.5。', cost: 1 },
+  { id: 'order', name: '好商量', desc: '订单奖励 ×2。', cost: 1 },
+  { id: 'meal', name: '认真吃饭', desc: '真实饭的热量奖励从 10 分钟产出提高到 30 分钟。', cost: 1 },
+  { id: 'cheap', name: '熟门熟路', desc: '所有升级价格 -25%。', cost: 1 },
 ];
 
 const PRESTIGE_UNIT = 1e11;

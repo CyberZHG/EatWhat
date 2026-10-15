@@ -304,6 +304,12 @@ function bindDishes() {
     e.preventDefault();
     if (input.value.trim()) addDish(input.value);
     const t = dishView.target;
+    if (!t.entryId && dishView.list.some(n => nameKey(n) === nameKey('离线七天'))) {
+      Pet.addAway(7 * DAY);
+      dlg.close();
+      notify('宠物的离线时间增加了 7 天，下次打开宠物页时结算。');
+      return;
+    }
     const before = Data.dishes().length;
     let entry = null;
     if (t.entryId) {

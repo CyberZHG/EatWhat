@@ -552,6 +552,11 @@ const Pet = (() => {
     save: () => dirty && save(),
     syncMeals,
     todayMeals,
+    addAway(ms) {
+      if (loop) return;
+      s.last -= ms;
+      save();
+    },
     checkAchv,
     feed() {
       s.clicks++;
