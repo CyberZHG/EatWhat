@@ -1,4 +1,4 @@
-const CACHE = 'eatwhat-v28';
+const CACHE = 'eatwhat-v29';
 const ASSETS = [
   './',
   'index.html',
@@ -10,6 +10,7 @@ const ASSETS = [
   'icons/icon-180.png',
   'icons/icon-192.png',
   'icons/icon-512.png',
+  'icons/icon-maskable-512.png',
   ...['core', 'icons', 'data', 'achievements', 'picker', 'groups', 'list', 'editor', 'history', 'ratings', 'dishes', 'achv-page', 'qr', 'sync', 'pet-data', 'pet', 'pet-ui', 'share', 'settings', 'main'].map(n => `js/${n}.js`),
 ];
 
