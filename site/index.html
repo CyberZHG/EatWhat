@@ -19,6 +19,10 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="今天吃什么">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/pages.css">
 </head>
@@ -270,6 +274,15 @@
         <div class="hint">评价越好、越常在当前这个钟点吃的，被抽中的机会会略微提高；踩雷的会略微降低。影响幅度有上限，不会盖过上面的抽选方式。</div>
         <label class="check"><input id="animChk" type="checkbox">抽选时播放滚动动画</label>
         <label><span>动画速度</span><select id="speedSel"></select></label>
+      </div>
+    </details>
+    <details class="panel fold" data-fold="install">
+      <summary>安装到设备</summary>
+      <div class="body">
+        <div class="hint">安装后可以从桌面或主屏幕直接打开，没有网络时也能使用。数据和在浏览器中打开时一样只保存在本机。</div>
+        <div class="row"><button id="installBtn" type="button" class="primary" hidden>安装</button></div>
+        <div id="installMsg" class="msg"></div>
+        <div class="hint">iPhone 和 iPad：在 Safari 中点分享按钮，选择“添加到主屏幕”。其他浏览器如果没有出现安装按钮，可以在浏览器菜单中找“安装应用”或“添加到主屏幕”。</div>
       </div>
     </details>
     <details class="panel fold" data-fold="sync">

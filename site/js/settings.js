@@ -46,7 +46,36 @@ async function importBackup(file) {
   }
 }
 
+const install = { prompt: null };
+
+function renderInstall() {
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  $('#installBtn').hidden = standalone || !install.prompt;
+  $('#installMsg').textContent = standalone ? '当前已经是安装后的应用。' : '';
+}
+
+addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  install.prompt = e;
+  renderInstall();
+});
+
+addEventListener('appinstalled', () => {
+  install.prompt = null;
+  renderInstall();
+  msg('installMsg', '已安装');
+});
+
 function bindSettings() {
+  renderInstall();
+  $('#installBtn').onclick = async () => {
+    const p = install.prompt;
+    if (!p) return;
+    install.prompt = null;
+    p.prompt();
+    await p.userChoice.catch(() => {});
+    renderInstall();
+  };
   $('#themeBtn').onclick = () => {
     setSetting('theme', settings.theme === 'dark' ? 'light' : 'dark');
     applyTheme();
