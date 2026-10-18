@@ -198,8 +198,12 @@ function renderPetMove() {
   $('#petCity').replaceChildren(el('b', '', `当前城市：${city.name}`), el('div', 'hint', `${city.rule} 已住 ${days} 天，搬过 ${s.moves || 0} 次家。`));
   const spent = SKILLS.filter(k => hasSkill(s, k.id)).reduce((a, k) => a + k.cost, 0);
   const free = (s.insight || 0) - spent;
-  $('#petInsight').textContent = `见识 ${s.insight || 0} 点，可用 ${free} 点。每点见识使产出 +${INSIGHT_BONUS * 100}%，花掉也不减少。`;
-  $('#petSkills').replaceChildren(...BRANCHES.map(b => {
+  const allSkills = SKILLS.every(k => hasSkill(s, k.id));
+  $('#petInsight').textContent = allSkills
+    ? `见识 ${s.insight || 0} 点。每点见识使产出 +${INSIGHT_BONUS * 100}%。技能已全部学会。`
+    : `见识 ${s.insight || 0} 点，可用 ${free} 点。每点见识使产出 +${INSIGHT_BONUS * 100}%，花掉也不减少。`;
+  $('#petSkills').hidden = allSkills;
+  $('#petSkills').replaceChildren(...allSkills ? [] : BRANCHES.map(b => {
     const col = el('div', 'skill-col');
     col.append(el('div', 'skill-branch', b));
     SKILLS.filter(k => k.branch === b).forEach(k => {
@@ -237,9 +241,10 @@ function renderPetMove() {
     return b;
   }));
   $('#petMoveBtn').disabled = g < 1;
-  const log = $('#petMoves');
-  log.hidden = !(s.moveLog || []).length;
-  log.replaceChildren(el('li', 'album-title', `搬家记录 · ${s.moveLog.length} 次`), ...[...s.moveLog].reverse().map(m => {
+  const moves = s.moveLog || [];
+  $('#petMovesFold').hidden = !moves.length;
+  $('#petMovesSum').textContent = `${moves.length} 次`;
+  $('#petMoves').replaceChildren(...[...moves].reverse().map(m => {
     const li = el('li');
     const c = CITIES.find(x => x.id === m.city) || CITIES[0];
     li.append(el('span', 'grow', c.name), el('span', 'meta', `${dayKey(new Date(m.from))} 至 ${dayKey(new Date(m.to))}，相册 ${m.album} 只、${m.points} 点胃口，获得 ${m.insight} 点见识`));
