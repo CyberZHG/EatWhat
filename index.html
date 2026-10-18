@@ -242,7 +242,10 @@
       <div class="row"><button id="petMoveBtn" type="button" class="primary">搬家</button></div>
       <div class="hint">搬家会清零热量、食物、升级、胃口、天赋和相册，换取见识。当前宠物、等级、经验、成就、订单记录和技能保留。</div>
     </section>
-    <ul id="petMoves" class="panel album" hidden></ul>
+    <details id="petMovesFold" class="panel fold" data-fold="petMoves" hidden>
+      <summary>搬家记录<span id="petMovesSum" class="sum-count"></span></summary>
+      <div class="body"><ul id="petMoves" class="album"></ul></div>
+    </details>
     </div>
     <details class="panel fold" data-fold="petAchv">
       <summary>宠物成就<span id="petAchvSum" class="sum-count"></span></summary>
